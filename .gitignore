@@ -1,2 +1,6 @@
 # Project exclude paths
 /out/
+
+# 有关IDEA的配置文件
+.idea/*
+*.iml
