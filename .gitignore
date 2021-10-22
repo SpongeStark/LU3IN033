@@ -1,0 +1,11 @@
+# Mac OS File system
+.DS_Store
+.DS_Store/
+
+# Project exclude paths
+/out/
+
+# about IDEA
+.idea/
+*.iml
+
