@@ -69,6 +69,35 @@ public class DNS implements Message {
             return false;
         }
     }
+
+    // return the cursor of the answer
+    private int decodeQuestions(char[] codes) throws ConvertException{
+        int cursor = 0;
+        int numQ = Tools.dec2hex(this.questions);
+        String[] _name = new String[numQ];
+        String[] _type = new String[numQ];
+        String[] _class = new String[numQ];
+        for(int i=0; i<numQ; i++){
+            // decode name
+            _name[i] = "";
+            int length = Tools.dec2hex(String.valueOf(codes, cursor, 2));
+            cursor += 2;
+            do{
+                for(int j=0; i<length; j++){
+                    _name[i] += (char)Tools.dec2hex(String.valueOf(codes, cursor, 2));
+                    cursor += 2;
+                }
+                length = Tools.dec2hex(String.valueOf(codes, cursor, 2));
+                cursor += 2;
+            }while(length != 0);
+            // decode type
+            _type[i] = String.valueOf(codes, cursor, cursor+4);
+            cursor += 4;
+            _class[i] = String.valueOf(codes, cursor, cursor+4);
+            cursor += 4;
+        }
+        return cursor;
+    }
     // endregion
 
     // region Display
@@ -97,7 +126,7 @@ public class DNS implements Message {
 
     public String toString(){
         StringBuilder res = new StringBuilder();
-        res.append("DNS : \n");
+        res.append("Domain Name System : \n");
         res.append(this.getIdToString());
         res.append(this.getFlagsToString());
         return res.toString();
