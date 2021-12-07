@@ -1,5 +1,6 @@
 package model;
 
+import exception.ConvertException;
 import utility.Tools;
 
 public class DNSQuestions {
@@ -11,9 +12,9 @@ public class DNSQuestions {
 
     public DNSQuestions(int questionCnt){
         this.n = questionCnt;
-        String[] _name = new String[this.n];
-        String[] _type = new String[this.n];
-        String[] _class = new String[this.n];
+        _names = new String[this.n];
+        _types = new String[this.n];
+        _classes = new String[this.n];
         isValid = true;
     }
 
@@ -30,17 +31,18 @@ public class DNSQuestions {
                         _names[i] += (char) Tools.dec2hex(String.valueOf(codes, cursor, 2));
                         cursor += 2;
                     }
+                    _names[i] += ".";
                     length = Tools.dec2hex(String.valueOf(codes, cursor, 2));
                     cursor += 2;
                 } while (length != 0);
                 // decode type
-                _types[i] = String.valueOf(codes, cursor, cursor + 4);
+                _types[i] = String.valueOf(codes, cursor,  4);
                 cursor += 4;
-                _classes[i] = String.valueOf(codes, cursor, cursor + 4);
+                _classes[i] = String.valueOf(codes, cursor, 4);
                 cursor += 4;
             }
             return cursor;
-        }catch (Exception e){
+        }catch (ConvertException e){
             isValid = false;
             return 0;
         }

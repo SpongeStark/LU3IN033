@@ -136,6 +136,7 @@ public class DNS implements Message {
         res.append("Domain Name System : \n");
         res.append(this.getIdToString());
         res.append(this.getFlagsToString());
+        res.append(this.getQuestionCountToString());
         res.append(this.getQuestionsToString());
         return res.toString();
     }
