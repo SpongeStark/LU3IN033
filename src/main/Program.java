@@ -12,6 +12,11 @@ import javax.swing.*;
 public class Program {
     public static void main(String[] args) {
         System.out.println("Hello World");
+//      test();
+    }
+
+    public static void test(){
+        System.out.println("Hello World");
 //        MainActivity mainActivity = new MainActivity();
 //        mainActivity.start();
 //        String path = "/Users/yangkai/Desktop/package.txt";
@@ -24,6 +29,10 @@ public class Program {
         System.out.println(eth);
 //        char[] code = codes.toCharArray();
 //        System.out.println(code[4]);
+
+    }
+
+    public static void test2(){
 
     }
 }
