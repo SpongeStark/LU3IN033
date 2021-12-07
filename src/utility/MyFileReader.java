@@ -25,7 +25,7 @@ public class MyFileReader {
             BufferedReader in = new BufferedReader(new FileReader(path));
             String str;
             while ((str = in.readLine()) != null) {
-                data.add(str);
+                data.add(str.trim());
             }
             return true;
         } catch (IOException e) {
@@ -39,12 +39,22 @@ public class MyFileReader {
         String[] currentLine = new String[0];
         String[] nextLine = new String[0];
         // for the first line
-        if(!data.get(0).trim().equals("")){
-            nextLine = data.get(0).split(" ");
+        while(data.get(0).trim().equals("")){
+            data.remove(0);
         }
+        nextLine = data.get(0).trim().split(" ");
+
         for(int i=0; i<data.size()-1; i++){
             currentLine = nextLine;
-            nextLine = data.get(i+1).split(" ");
+            nextLine = data.get(i+1).trim().split(" ");
+            while(data.get(i+1).trim().equals("")){//有空行就忽略往下走
+                data.remove(i+1);
+                nextLine = data.get(i+1).trim().split(" ");
+            }
+            if(i>=data.size()-1){
+                break;
+            }
+
             try{
                 int currentOffset = Tools.dec2hex(currentLine[0]);
                 int nextOffset = Tools.dec2hex(nextLine[0]);
@@ -68,7 +78,11 @@ public class MyFileReader {
                 nextLine = currentLine;
             } // END {try}
         } // END {for i from 0 to data.size()-2}
-        return (Frame[]) result.toArray();
+        // 读取最后一行：
+        currentLine = data.get(data.size()-1).split(" ");
+        buffer.addCodes(Arrays.copyOfRange(currentLine, 1, currentLine.length));
+        result.add(buffer);
+        return result.toArray(new Frame[0]);
     }
 
     public String toString(){
