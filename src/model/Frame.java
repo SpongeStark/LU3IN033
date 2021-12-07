@@ -44,9 +44,13 @@ public class Frame {
     public String toString(){
         StringBuffer buffer = new StringBuffer();
 //        buffer.append(this.data_str).append("\n");
-        buffer.append((new Ethernet(data_str.toCharArray())).toString());
-        buffer.append("is Valid = ").append(isValid).append("\n");
-        buffer.append("Error message : ").append(errorMessage);
+        if(isValid){
+            buffer.append((new Ethernet(data_str.toCharArray())).toString());
+        }else{
+            buffer.append("Frame not valid\n");
+            buffer.append("Error message : ").append(errorMessage);
+        }
+
         return buffer.toString();
     }
 
