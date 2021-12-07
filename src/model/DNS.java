@@ -3,7 +3,9 @@ package model;
 import exception.ConvertException;
 import utility.Tools;
 
+import java.security.PrivateKey;
 import java.util.Arrays;
+import java.util.PrimitiveIterator;
 
 public class DNS implements Message {
 
@@ -18,14 +20,16 @@ public class DNS implements Message {
     private boolean ra; // recursion available
     private int reserved;
     private int rCode; // response code
-    private String questions; // Question Count
+    private int questionCnt; // Question Count
     private String answerRRs; // Answer Count
     private String authRRs; // Authority record count
     private String addiRRs; // additional record count
 
     // Question
+    DNSQuestions questions;
 
     private String log;
+    private boolean isValid;
 
 
     public DNS(char[] codes){
@@ -39,10 +43,12 @@ public class DNS implements Message {
     public void decode(char[] codes) {
         this.id = String.valueOf(codes, 0, 4);
         this.flagsStatus = decodeFlags(Arrays.copyOfRange(codes, 4, 4+4));
-        this.questions = String.valueOf(codes, 8, 4);
+        this.questionCnt = decodeQuestionCnt(Arrays.copyOfRange(codes, 8, 8+4));
         this.answerRRs = String.valueOf(codes, 12, 4);
         this.authRRs = String.valueOf(codes, 16, 4);
         this.addiRRs = String.valueOf(codes, 20, 4);
+        int offset = this.decodeQuestions(Arrays.copyOfRange(codes, 24, codes.length));
+
     }
 
     private boolean decodeFlags(char[] codes){
@@ -70,33 +76,22 @@ public class DNS implements Message {
         }
     }
 
-    // return the cursor of the answer
-    private int decodeQuestions(char[] codes) throws ConvertException{
-        int cursor = 0;
-        int numQ = Tools.dec2hex(this.questions);
-        String[] _name = new String[numQ];
-        String[] _type = new String[numQ];
-        String[] _class = new String[numQ];
-        for(int i=0; i<numQ; i++){
-            // decode name
-            _name[i] = "";
-            int length = Tools.dec2hex(String.valueOf(codes, cursor, 2));
-            cursor += 2;
-            do{
-                for(int j=0; i<length; j++){
-                    _name[i] += (char)Tools.dec2hex(String.valueOf(codes, cursor, 2));
-                    cursor += 2;
-                }
-                length = Tools.dec2hex(String.valueOf(codes, cursor, 2));
-                cursor += 2;
-            }while(length != 0);
-            // decode type
-            _type[i] = String.valueOf(codes, cursor, cursor+4);
-            cursor += 4;
-            _class[i] = String.valueOf(codes, cursor, cursor+4);
-            cursor += 4;
+    private int decodeQuestionCnt(char[] code){
+        try{
+            return Tools.dec2hex(String.valueOf(code));
+        }catch (ConvertException e){
+            return -1;
         }
-        return cursor;
+    }
+
+    // return the cursor of the answer
+    private int decodeQuestions(char[] codes){
+        questions = new DNSQuestions(questionCnt);
+        return questions.decode(codes);
+    }
+
+    private int decodeAnswers(char[] codes){
+        return 0;
     }
     // endregion
 
@@ -122,6 +117,18 @@ public class DNS implements Message {
         return res.toString();
     }
 
+    private String getQuestionCountToString(){
+        if (questionCnt < 0) {
+            return "Question count : Error";
+        } else {
+            return "Question count : "+questionCnt+"\n";
+        }
+    }
+
+    private String getQuestionsToString(){
+        return questions.toString();
+    }
+
     // endregion
 
     public String toString(){
@@ -129,6 +136,7 @@ public class DNS implements Message {
         res.append("Domain Name System : \n");
         res.append(this.getIdToString());
         res.append(this.getFlagsToString());
+        res.append(this.getQuestionsToString());
         return res.toString();
     }
 
