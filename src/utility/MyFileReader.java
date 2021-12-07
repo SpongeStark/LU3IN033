@@ -36,8 +36,8 @@ public class MyFileReader {
     public Frame[] normalise(){
         ArrayList<Frame> result = new ArrayList<Frame>();
         Frame buffer = new Frame();
-        String[] currentLine = new String[0];
-        String[] nextLine = new String[0];
+        String[] currentLine;
+        String[] nextLine;
         // for the first line
         while(data.get(0).trim().equals("")){
             data.remove(0);
@@ -70,7 +70,11 @@ public class MyFileReader {
                     if(diffOffset <= 0){ // offset不valid，忽略这一行
                         nextLine = currentLine;
                     }else{
-                        buffer.addCodes(Arrays.copyOfRange(currentLine, 1, diffOffset+1));
+                        if(currentLine.length >= diffOffset+1) {
+                            buffer.addCodes(Arrays.copyOfRange(currentLine, 1, diffOffset + 1));
+                        }else{
+                            buffer.setErrorMessage("Error: in the line of offset = "+currentOffset);
+                        }
                     }
                 }
             }catch (ConvertException e){
