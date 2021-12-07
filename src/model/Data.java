@@ -15,6 +15,6 @@ public class Data implements Message{
     }
 
     public String toString(){
-        return String.valueOf(data)+"\n";
+        return "Data :\n"+String.valueOf(data)+"\n";
     }
 }
