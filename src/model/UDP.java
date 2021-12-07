@@ -36,6 +36,8 @@ public class UDP implements Message{
         this.isChecksumValid = this.verifyChecksum(codes);
         if(this.destPort.equals("0035") || this.srcPort.equals("0035")){ // DNS
             this.data = new DNS(Arrays.copyOfRange(codes, 16, codes.length));
+        }else if(this.destPort.equals("0043")||this.destPort.equals("0044")) {
+            this.data = new DHCP(Arrays.copyOfRange(codes, 16, codes.length));
         }else{
             this.data = new Data(Arrays.copyOfRange(codes, 16, codes.length));
         }
