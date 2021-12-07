@@ -12,7 +12,7 @@ import javax.swing.*;
 public class Program {
     public static void main(String[] args) {
         System.out.println("Hello World");
-//      test();
+        test2();
     }
 
     public static void test(){
@@ -33,6 +33,10 @@ public class Program {
     }
 
     public static void test2(){
-
+        String path = "C:/Users/lenovo/Desktop/stream.txt";
+        String codes = (new MyFileReader(path)).normalise()[0].toString();
+        System.out.println(codes);
+        codes = (new MyFileReader(path)).normalise()[1].toString();
+        System.out.println(codes);
     }
 }

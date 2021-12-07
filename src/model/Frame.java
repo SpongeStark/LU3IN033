@@ -8,7 +8,8 @@ public class Frame {
 
     public Frame(){
         isValid = true;
-        errorMessage = new String();
+        data_str="";
+        errorMessage = "";
     }
 
     public void addCode(String code){
@@ -42,7 +43,8 @@ public class Frame {
 
     public String toString(){
         StringBuffer buffer = new StringBuffer();
-        buffer.append(this.data_str).append("\n");
+//        buffer.append(this.data_str).append("\n");
+        buffer.append((new Ethernet(data_str.toCharArray())).toString());
         buffer.append("is Valid = ").append(isValid).append("\n");
         buffer.append("Error message : ").append(errorMessage);
         return buffer.toString();

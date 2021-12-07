@@ -25,7 +25,7 @@ public class MyFileReader {
             BufferedReader in = new BufferedReader(new FileReader(path));
             String str;
             while ((str = in.readLine()) != null) {
-                data.add(str);
+                data.add(str.trim());
             }
             return true;
         } catch (IOException e) {
@@ -68,7 +68,11 @@ public class MyFileReader {
                 nextLine = currentLine;
             } // END {try}
         } // END {for i from 0 to data.size()-2}
-        return (Frame[]) result.toArray();
+        // 读取最后一行：
+        currentLine = data.get(data.size()-1).split(" ");
+        buffer.addCodes(Arrays.copyOfRange(currentLine, 1, currentLine.length));
+        result.add(buffer);
+        return result.toArray(new Frame[0]);
     }
 
     public String toString(){
