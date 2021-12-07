@@ -27,6 +27,7 @@ public class IP implements Message {
 
 
     public IP(char[] code){
+        this.log = "";
         this.decode(code);
         this.isChecksumValid = verifyCheckSum(code);
     }

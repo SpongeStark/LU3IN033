@@ -3,6 +3,8 @@ package model;
 import exception.ConvertException;
 import utility.Tools;
 
+import java.util.Arrays;
+
 public class UDP implements Message{
     private String srcPort;
     private String destPort;
@@ -14,10 +16,12 @@ public class UDP implements Message{
     private boolean isChecksumValid;
 
     public UDP(){
+        this.log = "";
         this.isChecksumValid = false;
     }
 
     public UDP(char[] codes){
+        this.log = "";
         decode(codes);
     }
 
@@ -30,6 +34,11 @@ public class UDP implements Message{
         this.pseudoHeader += ("0011"+this.length);
         this.checksum = String.valueOf(codes, 12, 4);
         this.isChecksumValid = this.verifyChecksum(codes);
+        if(this.destPort.equals("0035") || this.srcPort.equals("0035")){ // DNS
+            this.data = new DNS(Arrays.copyOfRange(codes, 16, codes.length));
+        }else{
+            this.data = new Data(Arrays.copyOfRange(codes, 16, codes.length));
+        }
     }
 
     // endregion
@@ -126,6 +135,8 @@ public class UDP implements Message{
         res.append(this.getDestPortToString());
         res.append(this.getLengthToString());
         res.append(this.getCheckSumToString());
+        res.append("--------------------\n");
+        res.append(data.toString());
         return res.toString();
     }
 
