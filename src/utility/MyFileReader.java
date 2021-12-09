@@ -16,11 +16,11 @@ public class MyFileReader {
     public MyFileReader(String path){
         this.path = path;
         data = new ArrayList<String>();
-        // 读取文件，并存储到data里
-        this.readFile();
+
     }
 
-    private Boolean readFile() {
+    // 读取文件，并存储到data里
+    public Boolean readFile() {
         try {
             BufferedReader in = new BufferedReader(new FileReader(path));
             String str;
@@ -33,7 +33,7 @@ public class MyFileReader {
         }
     }
 
-    public Frame[] normalise(){
+    public Frame[] getFrames(){
         ArrayList<Frame> result = new ArrayList<Frame>();
         Frame buffer = new Frame();
         String[] currentLine;
@@ -56,8 +56,8 @@ public class MyFileReader {
             }
 
             try{
-                int currentOffset = Tools.dec2hex(currentLine[0]);
-                int nextOffset = Tools.dec2hex(nextLine[0]);
+                int currentOffset = Tools.hex2dec(currentLine[0]);
+                int nextOffset = Tools.hex2dec(nextLine[0]);
                 if(nextOffset == 0) { // 一个帧结束了
                     // 最后一行的数据推进缓存
                     buffer.addCodes(Arrays.copyOfRange(currentLine, 1, currentLine.length));

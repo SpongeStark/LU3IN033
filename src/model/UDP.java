@@ -61,7 +61,7 @@ public class UDP implements Message{
             int len = 6;
             int sum = 0;
             for(int i=0; i<len; i++){
-                sum += Tools.dec2hex(this.pseudoHeader.substring(i*4, i*4+4));
+                sum += Tools.hex2dec(this.pseudoHeader.substring(i*4, i*4+4));
             }
             return sum;
         }catch (ConvertException e){
@@ -79,7 +79,7 @@ public class UDP implements Message{
             int len = str_codes.length()/4;
             int sum = getPseudoHeaderSum();
             for(int i=0; i<len; i++){
-                sum += Tools.dec2hex(str_codes.substring(4*i, 4*i+4));
+                sum += Tools.hex2dec(str_codes.substring(4*i, 4*i+4));
             }
             int boundary = 0xffff + 1;
             while(sum > 0xffff){
@@ -97,7 +97,7 @@ public class UDP implements Message{
         StringBuilder res = new StringBuilder(title);
         res.append(" (0x").append(hexValue).append(") : ");
         try {
-            res.append(Tools.dec2hex(hexValue)).append("\n");
+            res.append(Tools.hex2dec(hexValue)).append("\n");
         } catch (ConvertException e) {
             res.append("ERROR\n");
             this.log += (title + " - Error\n");

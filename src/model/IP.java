@@ -50,7 +50,7 @@ public class IP implements Message {
             ((UDP) this.data).setPseudoHeader(this.src, this.dest);
         }
         try{
-            int IHL_value = Tools.hexChar2hex(this.IHL);
+            int IHL_value = Tools.hex2dec(this.IHL);
             if(!(IHL_value>5)){
                 throw new Exception();
             }else{
@@ -66,7 +66,7 @@ public class IP implements Message {
     private boolean[] decodeFlags(char code){
         boolean[] res = new boolean[3];
         try{
-            int value = Tools.hexChar2hex(code);
+            int value = Tools.hex2dec(code);
             // 得到前3位
             value /= 2;
             for(int i=2; i>=0; i--){
@@ -82,7 +82,7 @@ public class IP implements Message {
     private String decodeOffset(char[] code){
         StringBuilder res = new StringBuilder();
         try{
-            res.append(Tools.hexChar2hex(code[0]) % 2);
+            res.append(Tools.hex2dec(code[0]) % 2);
             res.append(code[1]).append(code[2]).append(code[3]);
         }catch (ConvertException e){
             this.log += "Fragment offset error\n";
@@ -136,10 +136,10 @@ public class IP implements Message {
     private boolean verifyCheckSum(char[] codes){
         try{
             // IHL * 4 * 8 bit/Byte / (4 * 4 bin_bit/hex_bit)
-            int len = Tools.hexChar2hex(this.IHL)*2;
+            int len = Tools.hex2dec(this.IHL)*2;
             int sum = 0;
             for(int i=0; i<len; i++){
-                sum += Tools.dec2hex(String.valueOf(codes, 4*i, 4));
+                sum += Tools.hex2dec(String.valueOf(codes, 4*i, 4));
             }
             int boundary = 65536; // 0xffff + 1
             sum = sum/boundary + sum%boundary;
@@ -155,7 +155,7 @@ public class IP implements Message {
         StringBuilder res = new StringBuilder(title);
         res.append(" (0x").append(hexValue).append(") : ");
         try {
-            res.append(Tools.dec2hex(hexValue)).append("\n");
+            res.append(Tools.hex2dec(hexValue)).append("\n");
         } catch (ConvertException e) {
             res.append("ERROR\n");
             this.log += (title + " - Error\n");
@@ -175,7 +175,7 @@ public class IP implements Message {
         StringBuilder res = new StringBuilder("Internet Header Length (0x");
         res.append(this.IHL).append(") : ");
         try {
-            res.append(Tools.hexChar2hex(this.IHL)*4).append(" Byte\n");
+            res.append(Tools.hex2dec(this.IHL)*4).append(" Byte\n");
         } catch (ConvertException e) {
             res.append("ERROR\n");
             this.log += "Header length - Error\n";
@@ -237,9 +237,9 @@ public class IP implements Message {
         }
         res.append(") : ");
         try{
-            res.append(Tools.dec2hex(this.src[0]));
+            res.append(Tools.hex2dec(this.src[0]));
             for(int i=1; i<4; i++){
-                res.append(".").append(Tools.dec2hex(this.src[i]));
+                res.append(".").append(Tools.hex2dec(this.src[i]));
             }
             res.append("\n");
         }catch (ConvertException e){
@@ -257,9 +257,9 @@ public class IP implements Message {
         }
         res.append(") : ");
         try{
-            res.append(Tools.dec2hex(this.dest[0]));
+            res.append(Tools.hex2dec(this.dest[0]));
             for(int i=1; i<4; i++){
-                res.append(".").append(Tools.dec2hex(this.dest[i]));
+                res.append(".").append(Tools.hex2dec(this.dest[i]));
             }
             res.append("\n");
         }catch (ConvertException e){

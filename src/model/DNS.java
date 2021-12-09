@@ -3,9 +3,7 @@ package model;
 import exception.ConvertException;
 import utility.Tools;
 
-import java.security.PrivateKey;
 import java.util.Arrays;
-import java.util.PrimitiveIterator;
 
 public class DNS implements Message {
 
@@ -21,12 +19,13 @@ public class DNS implements Message {
     private int reserved;
     private int rCode; // response code
     private int questionCnt; // Question Count
-    private String answerRRs; // Answer Count
+    private int answerRRs; // Answer Count
     private String authRRs; // Authority record count
     private String addiRRs; // additional record count
 
     // Question
     DNSQuestions questions;
+    DNSAnswers answers;
 
     private String log;
     private boolean isValid;
@@ -43,17 +42,19 @@ public class DNS implements Message {
     public void decode(char[] codes) {
         this.id = String.valueOf(codes, 0, 4);
         this.flagsStatus = decodeFlags(Arrays.copyOfRange(codes, 4, 4+4));
-        this.questionCnt = decodeQuestionCnt(Arrays.copyOfRange(codes, 8, 8+4));
-        this.answerRRs = String.valueOf(codes, 12, 4);
+        this.questionCnt = decodeCnt(Arrays.copyOfRange(codes, 8, 8+4));
+        this.answerRRs = decodeCnt(Arrays.copyOfRange(codes, 12, 12+4));
         this.authRRs = String.valueOf(codes, 16, 4);
         this.addiRRs = String.valueOf(codes, 20, 4);
-        int offset = this.decodeQuestions(Arrays.copyOfRange(codes, 24, codes.length));
+//        int offset = this.decodeQuestions(Arrays.copyOfRange(codes, 24, codes.length));
+        int offset = this.decodeQuestions(codes, 24);
+        offset = this.decodeAnswers(codes, offset);
 
     }
 
     private boolean decodeFlags(char[] codes){
         try{
-            int temp = Tools.dec2hex(String.valueOf(codes));
+            int temp = Tools.hex2dec(String.valueOf(codes));
             rCode = temp % 0b10000;
             temp /= 0b10000;
             reserved = temp % 0b1000;
@@ -76,24 +77,47 @@ public class DNS implements Message {
         }
     }
 
-    private int decodeQuestionCnt(char[] code){
+    private int decodeCnt(char[] code){
         try{
-            return Tools.dec2hex(String.valueOf(code));
+            return Tools.hex2dec(String.valueOf(code));
         }catch (ConvertException e){
             return -1;
         }
     }
 
     // return the cursor of the answer
-    private int decodeQuestions(char[] codes){
-        questions = new DNSQuestions(questionCnt);
+    private int decodeQuestions(char[] codes, int offset){
+        questions = new DNSQuestions(offset, questionCnt);
         return questions.decode(codes);
     }
 
-    private int decodeAnswers(char[] codes){
-        return 0;
+    private int decodeAnswers(char[] codes, int offset){
+        answers = new DNSAnswers(offset, answerRRs);
+        return answers.decode(codes);
     }
     // endregion
+
+    public static String decodeDomainName(char[] codes, int offset) throws ConvertException{
+//        if(Tools.hex2dec(codes[offset])>=12){
+//            //DNS Message Compression
+//            int newOffset = Tools.hex2dec(String.valueOf(codes, offset, 2)) % 0b1000000;
+//            return decodeDomainName(codes, newOffset);
+//        }
+        int cursor = offset;
+        StringBuilder res = new StringBuilder();
+        int length = Tools.hex2dec(String.valueOf(codes, cursor, 2));
+        cursor += 2;
+        do{
+            for (int j = 0; j < length; j++) {
+                res.append((char) Tools.hex2dec(String.valueOf(codes, cursor, 2)));
+                cursor += 2;
+            }
+            res.append(".");
+            length = Tools.hex2dec(String.valueOf(codes, cursor, 2));
+            cursor += 2;
+        } while (length != 0);
+        return res.toString();
+    }
 
     // region Display
     private String getIdToString(){
@@ -125,10 +149,6 @@ public class DNS implements Message {
         }
     }
 
-    private String getQuestionsToString(){
-        return questions.toString();
-    }
-
     // endregion
 
     public String toString(){
@@ -137,7 +157,8 @@ public class DNS implements Message {
         res.append(this.getIdToString());
         res.append(this.getFlagsToString());
         res.append(this.getQuestionCountToString());
-        res.append(this.getQuestionsToString());
+        res.append(questions.toString());
+        res.append(answers.toString());
         return res.toString();
     }
 

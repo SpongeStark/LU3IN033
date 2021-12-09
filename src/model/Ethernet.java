@@ -49,9 +49,9 @@ public class Ethernet implements Message {
             for(int i=1; i<6; i++){
                 res.append(":").append(destination[i]);
             }
-            res.append(") : ").append(Tools.dec2hex(destination[0]));
+            res.append(") : ").append(Tools.hex2dec(destination[0]));
             for(int i=1; i<6; i++){
-                res.append(":").append(Tools.dec2hex(destination[i]));
+                res.append(":").append(Tools.hex2dec(destination[i]));
             }
             res.append("\n");
             return res.toString();
@@ -69,9 +69,9 @@ public class Ethernet implements Message {
             for(int i=1; i<6; i++){
                 res.append(":").append(source[i]);
             }
-            res.append(") : ").append(Tools.dec2hex(source[0]));
+            res.append(") : ").append(Tools.hex2dec(source[0]));
             for(int i=1; i<6; i++){
-                res.append(":").append(Tools.dec2hex(source[i]));
+                res.append(":").append(Tools.hex2dec(source[i]));
             }
             res.append("\n");
             return res.toString();
@@ -97,13 +97,11 @@ public class Ethernet implements Message {
 
     public String toString(){
         StringBuilder res = new StringBuilder();
-        res.append("==================================================\n");
         res.append(getDestToString());
         res.append(getSrcToString());
         res.append(getTypeToString());
         res.append("--------------------\n");
         res.append(data.toString());
-        res.append("==================================================\n");
         return res.toString();
     }
 }

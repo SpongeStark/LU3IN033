@@ -42,15 +42,16 @@ public class Frame {
     }
 
     public String toString(){
-        StringBuffer buffer = new StringBuffer();
-//        buffer.append(this.data_str).append("\n");
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("\nFrame\n");
+        buffer.append("================================================================================\n");
         if(isValid){
             buffer.append((new Ethernet(data_str.toCharArray())).toString());
         }else{
             buffer.append("Frame not valid\n");
             buffer.append("Error message : ").append(errorMessage);
         }
-
+        buffer.append("================================================================================\n\n");
         return buffer.toString();
     }
 
