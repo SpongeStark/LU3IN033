@@ -36,24 +36,10 @@ public class DNSQuestions {
                     _names[i] = DNS.decodeDomainName(codes, cursor);
                     cursor += (_names[i].length()+1)*2;
                 }
-                // decode name
-//                _names[i] = "";
-//                int length = Tools.hex2dec(String.valueOf(codes, cursor, 2));
-//                cursor += 2;
-//                do {
-//                    for (int j = 0; j < length; j++) {
-//                        _names[i] += (char) Tools.hex2dec(String.valueOf(codes, cursor, 2));
-//                        cursor += 2;
-//                    }
-//                    _names[i] += ".";
-//                    length = Tools.hex2dec(String.valueOf(codes, cursor, 2));
-//                    cursor += 2;
-//                } while (length != 0);
-
                 // decode type
-                _types[i] = String.valueOf(codes, cursor,  4);
+                _types[i] = DNS.getType(String.valueOf(codes, cursor,  4));
                 cursor += 4;
-                _classes[i] = String.valueOf(codes, cursor, 4);
+                _classes[i] = DNS.getClass(String.valueOf(codes, cursor, 4));
                 cursor += 4;
             }
             return cursor;

@@ -20,12 +20,14 @@ public class DNS implements Message {
     private int rCode; // response code
     private int questionCnt; // Question Count
     private int answerRRs; // Answer Count
-    private String authRRs; // Authority record count
-    private String addiRRs; // additional record count
+    private int authRRs; // Authority record count
+    private int addiRRs; // additional record count
 
     // Question
     DNSQuestions questions;
-    DNSAnswers answers;
+    DNSSrcRecord answers;
+    DNSSrcRecord authorities;
+    DNSSrcRecord additional;
 
     private String log;
     private boolean isValid;
@@ -44,11 +46,12 @@ public class DNS implements Message {
         this.flagsStatus = decodeFlags(Arrays.copyOfRange(codes, 4, 4+4));
         this.questionCnt = decodeCnt(Arrays.copyOfRange(codes, 8, 8+4));
         this.answerRRs = decodeCnt(Arrays.copyOfRange(codes, 12, 12+4));
-        this.authRRs = String.valueOf(codes, 16, 4);
-        this.addiRRs = String.valueOf(codes, 20, 4);
-//        int offset = this.decodeQuestions(Arrays.copyOfRange(codes, 24, codes.length));
+        this.authRRs = decodeCnt(Arrays.copyOfRange(codes, 16, 16+4));
+        this.addiRRs = decodeCnt(Arrays.copyOfRange(codes, 20, 20+4));
         int offset = this.decodeQuestions(codes, 24);
         offset = this.decodeAnswers(codes, offset);
+        offset = this.decodeAuthority(codes, offset);
+        this.decodeAdditional(codes,offset);
 
     }
 
@@ -87,13 +90,34 @@ public class DNS implements Message {
 
     // return the cursor of the answer
     private int decodeQuestions(char[] codes, int offset){
-        questions = new DNSQuestions(offset, questionCnt);
-        return questions.decode(codes);
+        if(questionCnt>0){
+            questions = new DNSQuestions(offset, questionCnt);
+            return questions.decode(codes);
+        }
+        return 0;
     }
 
     private int decodeAnswers(char[] codes, int offset){
-        answers = new DNSAnswers(offset, answerRRs);
-        return answers.decode(codes);
+        if(answerRRs>0){
+            answers = new DNSSrcRecord(offset, answerRRs, "Answer");
+            return answers.decode(codes);
+        }
+        return 0;
+    }
+
+    private int decodeAuthority(char[] codes, int offset){
+        if(authRRs>0){
+            authorities = new DNSSrcRecord(offset, authRRs, "Authority");
+            return authorities.decode(codes);
+        }
+        return 0;
+    }
+
+    private void decodeAdditional(char[] codes, int offset){
+        if(addiRRs>0){
+            additional = new DNSSrcRecord(offset, addiRRs, "additional");
+            additional.decode(codes);
+        }
     }
     // endregion
 
@@ -118,6 +142,21 @@ public class DNS implements Message {
             }
         }
         return res.toString();
+    }
+
+    public static String getType(String typeId){
+        switch (typeId){
+            case "0001": return "A";
+            case "0005": return "CNAME";
+            default: return typeId;
+        }
+    }
+
+    public static String getClass(String classId){
+        switch (classId){
+            case "0001": return "IN";
+            default: return classId;
+        }
     }
 
     // region Display
@@ -150,6 +189,30 @@ public class DNS implements Message {
         }
     }
 
+    private String getAnswerCountToString(){
+        if (answerRRs < 0) {
+            return "Answer count : Error";
+        } else {
+            return "Answer count : "+answerRRs+"\n";
+        }
+    }
+
+    private String getAuthCountToString(){
+        if (authRRs < 0) {
+            return "Authority count : Error";
+        } else {
+            return "Authority count : "+authRRs+"\n";
+        }
+    }
+
+    private String getAddiCountToString(){
+        if (addiRRs < 0) {
+            return "Additional count : Error";
+        } else {
+            return "Additional count : "+addiRRs+"\n";
+        }
+    }
+
     // endregion
 
     public String toString(){
@@ -158,8 +221,13 @@ public class DNS implements Message {
         res.append(this.getIdToString());
         res.append(this.getFlagsToString());
         res.append(this.getQuestionCountToString());
-        res.append(questions.toString());
-        res.append(answers.toString());
+        res.append(this.getAnswerCountToString());
+        res.append(this.getAuthCountToString());
+        res.append(this.getAddiCountToString());
+        res.append(questionCnt>0 ? questions.toString() : "");
+        res.append(answerRRs>0 ? answers.toString() : "");
+        res.append(authRRs>0 ? authorities.toString() : "");
+        res.append(addiRRs>0 ? additional.toString() : "");
         return res.toString();
     }
 

@@ -97,6 +97,7 @@ public class Ethernet implements Message {
 
     public String toString(){
         StringBuilder res = new StringBuilder();
+        res.append("Ethernet : \n");
         res.append(getDestToString());
         res.append(getSrcToString());
         res.append(getTypeToString());

@@ -1,30 +1,35 @@
 package model;
 
+import com.sun.xml.internal.xsom.impl.scd.Step;
 import utility.Tools;
 
-public class DNSAnswers {
+import javax.tools.Tool;
+
+public class DNSSrcRecord {
     int n;
     int offset;
+    String title;
     String[] _names;
     String[] _types;
     String[] _classes;
-    String[] _ttl;
+    int[] _ttl;
     int[] _srcDataLength;
     String[] _srcData;
     char[] data;
     boolean isValid;
 
 
-    public DNSAnswers(int offset, int answerCnt){
-        this.n = answerCnt;
+    public DNSSrcRecord(int offset, int count, String title){
+        this.n = count;
+        this.title = title;
         _names = new String[n];
         _types = new String[n];
         _classes = new String[n];
-        _ttl = new String[n];
+        _ttl = new int[n];
         _srcDataLength = new int[n];
         _srcData = new String[n];
         this.offset = offset;
-        isValid = answerCnt>=0;
+        isValid = count>=0;
     }
 
     public int decode(char[] codes){
@@ -54,13 +59,13 @@ public class DNSAnswers {
                     }
                 } while (length != 0);
                 // read type
-                _types[i] = String.valueOf(codes, cursor,  4);
+                _types[i] = DNS.getType(String.valueOf(codes, cursor,  4));
                 cursor += 4;
                 // read class
-                _classes[i] = String.valueOf(codes, cursor, 4);
+                _classes[i] = DNS.getClass(String.valueOf(codes, cursor, 4));
                 cursor += 4;
                 // read ttl
-                _ttl[i] = String.valueOf(codes, cursor, 8);
+                _ttl[i] = Tools.hex2dec(String.valueOf(codes, cursor, 8));
                 cursor += 8;
                 // read resource data length
 //                _srcDataLength[i] = String.valueOf(codes, cursor, 4);
@@ -69,7 +74,10 @@ public class DNSAnswers {
                 _srcDataLength[i] = len;
 //                int len = Tools.hex2dec(_srcDataLength[i]);
                 // read resource data
-                _srcData[i] = String.valueOf(codes, cursor, len*2);
+                String info = String.valueOf(codes, cursor, len*2);
+                if(_types[i].equals("A")){_srcData[i] = getIpToString(info);}
+                else if(_types[i].equals("CNAME")){_srcData[i] = DNS.decodeDomainName(codes, cursor);}
+                else{_srcData[i] = info;}
                 cursor += len*2;
             }
             return cursor;
@@ -81,10 +89,25 @@ public class DNSAnswers {
 
 
     // region Display
+    String getIpToString(String ip){
+        String[] ipAddr_str = new String[4];
+        int[] res = new int[4];
+        try{
+            for(int i=0; i<4; i++){
+                ipAddr_str[i] = ip.substring(2*i, 2*i+2);
+                res[i] = Tools.hex2dec(ipAddr_str[i]);
+            }
+            return String.format("%d.%d.%d.%d",res[0],res[1],res[2],res[3]);
+        }catch (Exception e){
+            return "Error";
+        }
+    }
+
+
 
     // endregion
     public String toString(){
-        StringBuilder res = new StringBuilder("Answers : ");
+        StringBuilder res = new StringBuilder(this.title).append(" : ");
         if(isValid){
             res.append("\n");
             for(int i = 0; i< n; i++){
@@ -99,7 +122,6 @@ public class DNSAnswers {
         }else{
             res.append("Error\n");
         }
-//        res.append(String.valueOf(this.data, offset, data.length-offset));
         return res.toString();
     }
 

@@ -46,7 +46,7 @@ public class Frame {
 //        buffer.append("\nFrame\n");
         buffer.append("==================================================\n");
         if(isValid){
-            buffer.append((new Ethernet(data_str.toCharArray())).toString());
+            buffer.append((new Ethernet(data_str.toLowerCase().toCharArray())).toString());
         }else{
             buffer.append("Frame not valid\n");
             buffer.append("Error message : ").append(errorMessage);
