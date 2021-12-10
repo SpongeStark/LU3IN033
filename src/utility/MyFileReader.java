@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MyFileReader {
-    private String path;
+    private final String path;
     private ArrayList<String> data;
 
     public MyFileReader(String path){

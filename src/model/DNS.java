@@ -98,24 +98,25 @@ public class DNS implements Message {
     // endregion
 
     public static String decodeDomainName(char[] codes, int offset) throws ConvertException{
-//        if(Tools.hex2dec(codes[offset])>=12){
-//            //DNS Message Compression
-//            int newOffset = Tools.hex2dec(String.valueOf(codes, offset, 2)) % 0b1000000;
-//            return decodeDomainName(codes, newOffset);
-//        }
-        int cursor = offset;
         StringBuilder res = new StringBuilder();
-        int length = Tools.hex2dec(String.valueOf(codes, cursor, 2));
-        cursor += 2;
-        do{
-            for (int j = 0; j < length; j++) {
-                res.append((char) Tools.hex2dec(String.valueOf(codes, cursor, 2)));
+        if(Tools.hex2dec(codes[offset])>=0b1100){
+            //DNS Message Compression
+            int denom = 0b100 * 0b10000 * 0b10000 * 0b10000;
+            int newOffset = Tools.hex2dec(String.valueOf(codes, offset, 4)) % denom;
+            res.append(decodeDomainName(codes, newOffset*2));
+        }else{
+            int cursor = offset;
+            int length = Tools.hex2dec(String.valueOf(codes, cursor, 2));
+            if(length != 0){
                 cursor += 2;
+                for (int j = 0; j < length; j++) {
+                    res.append((char) Tools.hex2dec(String.valueOf(codes, cursor, 2)));
+                    cursor += 2;
+                }
+                res.append(".");
+                res.append(decodeDomainName(codes, cursor));
             }
-            res.append(".");
-            length = Tools.hex2dec(String.valueOf(codes, cursor, 2));
-            cursor += 2;
-        } while (length != 0);
+        }
         return res.toString();
     }
 
@@ -130,14 +131,14 @@ public class DNS implements Message {
             res.append("\tError\n");
             return res.toString();
         }
-        res.append("\tQR : ").append(qr?1:0).append(qr?" (Response)\n":" (Query)\n");
-        res.append("\tOpcode : ").append(opCode).append("\n");
-        res.append("\tAuthoritative answer : ").append(aa).append("\n");
-        res.append("\tTruncated : ").append(tc).append("\n");
-        res.append("\tRecursion desired : ").append(rd).append("\n");
-        res.append("\tRecursion available : ").append(ra).append("\n");
-        res.append("\tReserved : ").append(reserved).append("\n");
-        res.append("\tResponse code : ").append(rCode).append("\n");
+        res.append("    QR : ").append(qr?1:0).append(qr?" (Response)\n":" (Query)\n");
+        res.append("    Opcode : ").append(opCode).append("\n");
+        res.append("    Authoritative answer : ").append(aa).append("\n");
+        res.append("    Truncated : ").append(tc).append("\n");
+        res.append("    Recursion desired : ").append(rd).append("\n");
+        res.append("    Recursion available : ").append(ra).append("\n");
+        res.append("    Reserved : ").append(reserved).append("\n");
+        res.append("    Response code : ").append(rCode).append("\n");
         return res.toString();
     }
 

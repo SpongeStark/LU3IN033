@@ -29,9 +29,9 @@ public class DNSQuestions {
                 if(Tools.hex2dec(codes[cursor])>=12){
                     //DNS Message Compression
                     int denom = 0b100 * 0b10000 * 0b10000 * 0b10000;
-                    int newOffset = Tools.hex2dec(String.valueOf(codes, cursor, 4)) % denom;
+                    int newOffset = Tools.hex2dec(String.valueOf(codes, cursor-2, 4)) % denom;
                     _names[i] = DNS.decodeDomainName(codes, newOffset*2);
-                    cursor += 4;
+                    cursor += 2;
                 }else{
                     _names[i] = DNS.decodeDomainName(codes, cursor);
                     cursor += (_names[i].length()+1)*2;
@@ -67,11 +67,12 @@ public class DNSQuestions {
     public String toString() {
         StringBuilder res = new StringBuilder("Questions : ");
         if(isValid){
+            res.append("\n");
             for(int i = 0; i< n; i++){
-                res.append("\n--").append(i+1).append("----\n");
-                res.append("\tName : ").append(_names[i]).append("\n");
-                res.append("\tType : ").append(_types[i]).append("\n");
-                res.append("\tClass : ").append(_classes[i]).append("\n");
+                res.append("--").append(i+1).append("----\n");
+                res.append("    Name : ").append(_names[i]).append("\n");
+                res.append("    Type : ").append(_types[i]).append("\n");
+                res.append("    Class : ").append(_classes[i]).append("\n");
             }
         }else{
             res.append("Error\n");

@@ -9,19 +9,19 @@ public class DNSAnswers {
     String[] _types;
     String[] _classes;
     String[] _ttl;
-    String[] _srcDataLength;
+    int[] _srcDataLength;
     String[] _srcData;
     char[] data;
     boolean isValid;
 
 
     public DNSAnswers(int offset, int answerCnt){
-        this.n = 1;
+        this.n = answerCnt;
         _names = new String[n];
         _types = new String[n];
         _classes = new String[n];
         _ttl = new String[n];
-        _srcDataLength = new String[n];
+        _srcDataLength = new int[n];
         _srcData = new String[n];
         this.offset = offset;
         isValid = answerCnt>=0;
@@ -34,24 +34,14 @@ public class DNSAnswers {
             for(int i=0; i<this.n; i++){
                 // read name
                 _names[i] = "";
-//                if(Tools.hex2dec(codes[cursor])>=0b1100){
-//                    //DNS Message Compression
-//                    int denom = 0b100 * 0b10000 * 0b10000 * 0b10000;
-//                    int newOffset = Tools.hex2dec(String.valueOf(codes, cursor, 4)) % denom;
-//                    _names[i] = DNS.decodeDomainName(codes, newOffset*2);
-//                    cursor += 4;
-//                }else{
-//                    _names[i] = DNS.decodeDomainName(codes, cursor);
-//                    cursor += (_names[i].length()+1)*2;
-//                }
                 int length = Tools.hex2dec(String.valueOf(codes, cursor, 2));
                 cursor += 2;
                 do{
                     if(length>=0b11000000){ //DNS Message Compression
                         int denom = 0b100 * 0b10000 * 0b10000 * 0b10000;
-                        int newOffset = Tools.hex2dec(String.valueOf(codes, cursor, 4)) % denom;
+                        int newOffset = Tools.hex2dec(String.valueOf(codes, cursor-2, 4)) % denom;
                         _names[i] += DNS.decodeDomainName(codes, newOffset*2);
-                        cursor += 4;
+                        cursor += 2;
                         break;
                     }else{
                         for (int j = 0; j < length; j++) {
@@ -73,9 +63,11 @@ public class DNSAnswers {
                 _ttl[i] = String.valueOf(codes, cursor, 8);
                 cursor += 8;
                 // read resource data length
-                _srcDataLength[i] = String.valueOf(codes, cursor, 4);
+//                _srcDataLength[i] = String.valueOf(codes, cursor, 4);
+                int len = Tools.hex2dec(String.valueOf(codes, cursor, 4));
                 cursor += 4;
-                int len = Tools.hex2dec(_srcDataLength[i]);
+                _srcDataLength[i] = len;
+//                int len = Tools.hex2dec(_srcDataLength[i]);
                 // read resource data
                 _srcData[i] = String.valueOf(codes, cursor, len*2);
                 cursor += len*2;
@@ -87,17 +79,22 @@ public class DNSAnswers {
         }
     }
 
+
+    // region Display
+
+    // endregion
     public String toString(){
         StringBuilder res = new StringBuilder("Answers : ");
         if(isValid){
+            res.append("\n");
             for(int i = 0; i< n; i++){
-                res.append("\n--").append(i+1).append("----\n");
-                res.append("\tName : ").append(_names[i]).append("\n");
-                res.append("\tType : ").append(_types[i]).append("\n");
-                res.append("\tClass : ").append(_classes[i]).append("\n");
-                res.append("\tTime to live : ").append(_ttl[i]).append("\n");
-                res.append("\tResource Data Length : ").append(_srcDataLength[i]).append("\n");
-                res.append("\tResource Data : ").append(_srcData[i]).append("\n");
+                res.append("--").append(i+1).append("----\n");
+                res.append("    Name : ").append(_names[i]).append("\n");
+                res.append("    Type : ").append(_types[i]).append("\n");
+                res.append("    Class : ").append(_classes[i]).append("\n");
+                res.append("    Time to live : ").append(_ttl[i]).append("\n");
+                res.append("    Resource Data Length : ").append(_srcDataLength[i]).append("\n");
+                res.append("    Resource Data : ").append(_srcData[i]).append("\n");
             }
         }else{
             res.append("Error\n");

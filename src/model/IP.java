@@ -197,9 +197,9 @@ public class IP implements Message {
 
     private String getFlagsToString(){
         StringBuilder res = new StringBuilder("Flags : \n");
-        res.append("\tReserved bit : ").append(this.flags[0]).append("\n");
-        res.append("\tDo not fragment : ").append(this.flags[1]).append("\n");
-        res.append("\tMore fragments : ").append(this.flags[2]).append("\n");
+        res.append("    Reserved bit : ").append(this.flags[0]).append("\n");
+        res.append("    Do not fragment : ").append(this.flags[1]).append("\n");
+        res.append("    More fragments : ").append(this.flags[2]).append("\n");
         return res.toString();
     }
 
