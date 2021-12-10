@@ -71,6 +71,10 @@ public class MainWindow extends JFrame {
         return this;
     }
 
+    public String getResult(){
+        return this.txt_output.getText();
+    }
+
     private void initBtnCopy(){
         btnCopy = new JButton();
         btnCopy.setBounds(100,310,100,35);
