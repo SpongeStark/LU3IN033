@@ -1,10 +1,13 @@
 package controller;
 
 import view.MainWindow;
+import view.MyFileDialog;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
 
 public class MainActivity {
     MainWindow window;
@@ -16,14 +19,27 @@ public class MainActivity {
 
     private void btnFind_onClick(ActionEvent e) {
 //        JOptionPane.showMessageDialog(null, "Ton message");
-        JFileChooser fileChooser = new JFileChooser();
+//        JFileChooser fileChooser = new JFileChooser();
+//        //file name filter
+//        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text file","txt");
+//        fileChooser.setFileFilter(filter);
+//        int result = fileChooser.showOpenDialog(window);
+//        if(result == JFileChooser.APPROVE_OPTION){
+//            window.txt_path.setText(fileChooser.getSelectedFile().getAbsolutePath());
+//        }
+        FileDialog fileChooser = new FileDialog(window);
         //file name filter
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text file","txt");
-        fileChooser.setFileFilter(filter);
-        int result = fileChooser.showOpenDialog(window);
-        if(result == JFileChooser.APPROVE_OPTION){
-            window.txt_path.setText(fileChooser.getSelectedFile().getAbsolutePath());
+//        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text file","txt");
+//        fileChooser.setFileFilter(filter);
+        fileChooser.show();
+        fileChooser.setMode(FileDialog.LOAD);
+        String filePath = fileChooser.getDirectory();
+        String fileName = fileChooser.getFile();
+        if(filePath!=null && fileName!=null){
+            window.txt_path.setText(filePath+fileName);
         }
+
+
 
     }
 
