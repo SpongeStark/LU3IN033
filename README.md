@@ -5,7 +5,31 @@
 
 # Structure de la code
 
-On fait ce projet avec le mode MVC, donc on a d'abord trois package. Et puis on a un package `exception` pour définir notre propre excption. Et encore un package `utility` pour définir les fonctions statiques comme un outil. Et enfin un package `main` qui contient la fonction principale, qui est qussi l'entré de notre java programme.
-
-## Package `Model`
+└── LU3IN033
+    ├── README.md
+    └── src
+        ├── controller
+        │   └── MainActivity.java
+        ├── exception
+        │   ├── AsciizToStringException.java
+        │   └── ConvertException.java
+        ├── main
+        │   └── Program.java
+        ├── model
+        │   ├── Data.java
+        │   ├── DHCP.java
+        │   ├── DHCPOptions.java
+        │   ├── DNS.java
+        │   ├── DNSQuestions.java
+        │   ├── DNSSrcRecord.java
+        │   ├── Ethernet.java
+        │   ├── Frame.java
+        │   ├── IP.java
+        │   ├── Message.java
+        │   └── UDP.java
+        ├── utility
+        │   ├── MyFileReader.java
+        │   └── Tools.java
+        └── view
+            └── MainWindow.java
 
