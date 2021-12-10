@@ -4,20 +4,25 @@ import javax.swing.*;
 
 public class MainWindow extends JFrame {
     public JPanel container;
-    public JButton btn;
+    public JButton btnFind;
     public JTextField txt_path;
     public JTextArea txt_output;
+    public JButton btnCopy;
+    public JButton btnSave;
 
     public MainWindow(){
         super();
         setWindow();
         setInputTextFiled();
-        setBtn();
+        setBtnFind();
         setOutputArea();
     }
 
     private void setWindow(){
-        setSize(400,300);
+        setSize(600,400);
+        this.setLocationRelativeTo(null); // 窗口居中显示
+        this.setResizable(false); // 禁止调整窗口大小
+        this.setTitle("Frame analyser - Youheng-Kai"); // 设置窗口标题
         container = new JPanel();
         this.setContentPane(container);
         container.setLayout(null);
@@ -25,23 +30,22 @@ public class MainWindow extends JFrame {
 
     private void setInputTextFiled(){
         txt_path = new JTextField();
-        txt_path.setBounds(20, 20, 250, 30);
+        txt_path.setBounds(20, 20, 440, 30);
         container.add(txt_path);
     }
 
-    private void setBtn(){
-        btn = new JButton();
-//        btn.setSize(100,35);
-        btn.setBounds(280,20,100,30);
-        btn.setText("Chose a file");
-        container.add(btn);
+    private void setBtnFind(){
+        btnFind = new JButton();
+        btnFind.setBounds(480,17,100,35);
+        btnFind.setText("Chose a file");
+        container.add(btnFind);
     }
 
     private void setOutputArea(){
-        txt_output = new JTextArea("Ethernet");
+        txt_output = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(txt_output);
 //        scrollPane.setSize(90,30);
-        scrollPane.setBounds(20, 60, 360, 200);
+        scrollPane.setBounds(22, 60, 556, 200);
         container.add(scrollPane);
     }
 

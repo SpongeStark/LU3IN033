@@ -16,7 +16,6 @@ public class MyFileReader {
     public MyFileReader(String path){
         this.path = path;
         data = new ArrayList<String>();
-
     }
 
     // 读取文件，并存储到data里
