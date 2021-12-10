@@ -69,6 +69,7 @@ public class MyFileReader {
                     if(diffOffset <= 0){ // offset不valid，忽略这一行
                         nextLine = currentLine;
                     }else{
+                        currentLine = trimArray(currentLine);
                         if(currentLine.length >= diffOffset+1) {
                             buffer.addCodes(Arrays.copyOfRange(currentLine, 1, diffOffset + 1));
                         }else{
@@ -86,6 +87,16 @@ public class MyFileReader {
         buffer.addCodes(Arrays.copyOfRange(currentLine, 1, currentLine.length));
         result.add(buffer);
         return result.toArray(new Frame[0]);
+    }
+
+    private String[] trimArray(String[] array){
+        ArrayList<String> res = new ArrayList<>();
+        for(String s : array){
+            if(!s.trim().isEmpty()){
+                res.add(s.trim());
+            }
+        }
+        return res.toArray(new String[0]);
     }
 
     public String toString(){

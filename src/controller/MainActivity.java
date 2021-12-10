@@ -70,6 +70,7 @@ public class MainActivity {
         // encapsulate the result
         Transferable text = new StringSelection(result);
         clipboard.setContents(text, null);
+        JOptionPane.showMessageDialog(window, "The result is in your clipboard");
     }
 
     private void btnSave_onCLick(ActionEvent e){
